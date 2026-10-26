@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ถึงเคิซ</title>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#8fd0ff;--ink:#16325c;--mute:#5b78a3;--acc:#2f80ff;--line:rgba(255,255,255,.8);--on:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100dvh;display:flex;padding:20px 20px 90px;font-family:'Mali','Prompt',system-ui,sans-serif;color:var(--ink);
+background:linear-gradient(180deg,#1747c9 0,#2f80ff 28%,#78c4ff 65%,#d9f1ff 100%) fixed,var(--bg)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.9;background:radial-gradient(1.5px 1.5px at 12% 14%,#fff,transparent),radial-gradient(2px 2px at 30% 8%,#fff,transparent),radial-gradient(1.5px 1.5px at 55% 18%,#fff,transparent),radial-gradient(2px 2px at 78% 10%,#fff,transparent),radial-gradient(1.5px 1.5px at 90% 24%,#fff,transparent),radial-gradient(2px 2px at 8% 38%,#fff,transparent),radial-gradient(1.5px 1.5px at 66% 40%,#fff,transparent)}
+.card{width:min(560px,100%);margin:auto;padding:28px 24px;position:relative;border:2px solid var(--line);border-radius:30px;background:rgba(255,255,255,.92);box-shadow:0 18px 50px rgba(10,40,120,.35),0 0 0 6px rgba(255,255,255,.12)}
+.card::before{content:"⭐";position:absolute;top:-14px;left:22px;font-size:22px}
+.card::after{content:"☁️";position:absolute;top:-24px;right:20px;font-size:40px}
+.tag{display:inline-block;font-size:13px;font-weight:500;color:#fff;background:linear-gradient(90deg,#2f80ff,#4fb6ff);padding:3px 14px;border-radius:999px}
+h1{font-size:26px;font-weight:500;margin:10px 0 18px}
+h1:empty{display:none}
+p{line-height:1.9;font-weight:300;font-size:16px;margin:0 0 14px;white-space:pre-line;overflow-wrap:anywhere}
+.note{color:var(--mute);font-size:14px}
+button{font:inherit;cursor:pointer;width:100%;padding:13px 16px;margin-top:10px;border-radius:999px;border:2px solid var(--acc);background:#fff;color:var(--ink);transition:.2s}
+button:hover{background:var(--acc);color:var(--on)}
+button.main{background:linear-gradient(90deg,#2f80ff,#4fb6ff);color:var(--on);font-weight:500;box-shadow:0 6px 18px rgba(47,128,255,.4)}
+button.back{background:transparent;border:none;box-shadow:none;color:var(--mute);font-size:14px;width:auto;display:block;margin:12px auto 0}
+button.back:hover{background:transparent;color:var(--acc)}
+.fade{animation:f .7s ease}
+@keyframes f{from{opacity:0;transform:translateY(10px)}}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.rise{opacity:0;animation:up .6s ease forwards}
+textarea{width:100%;font:inherit;padding:12px;border-radius:16px;border:2px solid var(--line);background:#fff;color:var(--ink);resize:vertical;margin-top:6px}
+/* ซองจดหมาย */
+.env{position:relative;width:100%;height:230px;margin:8px 0 6px;cursor:pointer}
+.env .body{position:absolute;inset:0;border-radius:16px;background:linear-gradient(160deg,#eaf6ff,#b9e2ff);box-shadow:0 10px 24px rgba(10,40,120,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:2}
+.env .cover{font-size:28px;font-weight:500;color:#16325c}
+.env .hint{font-size:13px;color:#2f80ff}
+.env .flap{position:absolute;left:0;right:0;top:0;height:55%;background:#8fd0ff;clip-path:polygon(0 0,100% 0,50% 100%);border-radius:16px 16px 0 0;transform-origin:top center;transition:transform .8s ease;z-index:3}
+.env.open .flap{transform:rotateX(180deg);opacity:0}
+.env:hover .body{transform:translateY(-3px);transition:.2s}
+.sign{text-align:right;margin-top:18px;font-size:16px;color:var(--mute)}
+</style>
+</head>
+<body>
+<div class="card" id="card"></div>
+<iframe id="yt" title="เพลง" allow="autoplay; encrypted-media" style="display:none;position:fixed;width:280px;max-width:90vw;height:100px;border:0;border-radius:14px;bottom:64px;left:50%;transform:translateX(-50%);z-index:4;box-shadow:0 6px 20px rgba(10,40,120,.3)"></iframe>
+<audio id="snd" loop preload="auto" src="/_blob/1c741439ec4203a2a7e3e33994e0927e"></audio>
+<div class="bar" style="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.92);box-shadow:0 6px 20px rgba(10,40,120,.3);font-size:13px;z-index:5"><button id="pp" aria-label="เล่นหรือหยุดเพลง" style="width:auto;margin:0;padding:4px 12px">⏸</button><span>♪</span><input id="vol" type="range" min="0" max="100" value="60" aria-label="ระดับเสียง" style="width:90px;accent-color:#2f80ff"><a href="https://www.youtube.com/watch?v=aT3fsGw9obk" target="_blank" rel="noopener" style="color:#2f80ff">YouTube</a></div>
+<script>
+/* ===================== แก้ข้อความตรงนี้ได้เลย =====================
+   - ข้อความย่อหน้าใหม่ ให้เว้นบรรทัดด้วย \n\n
+   - next / ปุ่มเลือก ชี้ไปหา id ของหน้าถัดไป (ห้ามเปลี่ยน id)
+================================================================== */
+const YT_ID = "aT3fsGw9obk";   // รหัสวิดีโอ YouTube ของเพลง
+const GIFT_URL = "https://www.posyforyou.com/preview/3es7rtmd";   // ลิงก์ของขวัญหน้าสุดท้าย
+
+const S = {
+/* ---------- ส่วนที่ 1: ความรู้สึก 5 หน้า ---------- */
+m1:{envelope:true,tag:"ข้อความที่ 1 / 5",title:"Dear, Kurz",letterTitle:"",from:"",next:"m2",btn:"ต่อไป",
+text:"Dear, Khun Poom\naka Keaittipoom, Kurz Doomveil, Kurz Percival Wulfric Brian Doomveil, Kurz Percival Wulfric Brian Karol Blackcrown Brownstroke McMilan Pakinson Doomveil\nช่วงนี้เห็นดูเหนื่อย ๆ อยากลืมหาเวลาทานข้าวนะ\nถ้าสิ่งที่เนทำอยู่มันทำให้เคิซเหนื่อยก็ปิดไปก่อนก็ได้ครับ\n\nPs.ไม่รู้ว่าอะไรทำให้เคิซโกรธหรือเกลียดเนมากขนาดที่ไม่อยากพูดคุยกับเน ขอโทษที่ทักหรือไปให้เจอในทุก ๆ ครั้ง\nเนขอฝากจดหมายนี้ไว้แทนนะครับ ถือเป็นของขวัญก็ได้ เพราะเนแทบจะยังไม่เคยทำอะไรให้เคิซเลย\n\nFrom, Ne"},
+
+m2:{tag:"ข้อความที่ 2 / 5",title:"",next:"m3",btn:"ต่อไป",
+text:"เนดีใจที่ได้รู้จักเคิซนะครับ\n\nเนรู้ว่าเคิซชอบเล่นเกม ชอบอยู่กับเพื่อน ๆ เคิซดูมีความสุขมาก ๆ เนรู้สึกไม่ดีที่เป็นแบบนั้นให้เคิซไม่ได้ บางครั้งเนก็เลยแอบน้อยใจตัวเอง บางครั้งก็นั่งยิ้มเพราะเธอดูน่ารักมาก ๆ ตอนทำอะไรที่ชอบ including ตอนสวดมนต์\n\nเนสารภาพว่าเนแอบไม่ชอบรถไฟเลย ตอนเคิซเปิดให้ดูเนกำลังจะพูดแล้วว่า ไม่พูดเรื่องรถไฟได้มั้ย555555 แต่พอฟังเคิซไปเรื่อย ๆ เนก็ไม่ได้ชอบรถไฟมากขึ้นนะ แต่เนก็รู้จักรถไฟมากขึ้น แล้วก็สงสัยว่าเคิซจะเล่าอะไรกับรถไฟให้ฟังอีก มันทำให้เนอยากฟัง ขอบคุณที่เล่าให้ฟังนะ\n\nเนรู้ว่าเคิซชอบ Oh my God ชอบ Adele Bruno Gaga แล้วก็เทสหนังที่ชอบ ชอบกินผัดกะเพรา ขนมปังมาก เนรู้ว่าเคิซใส่ใจสิ่งที่ตัวเองชอบ ใส่ใจหน้าที่ของตัวเอง เธอดูตั้งใจ เป็นตัวของตัวเอง ซึ่งมันดีมาก ๆ ครับ"},
+
+m3:{tag:"ข้อความที่ 3 / 5",title:"ขอโทษนะครับ",next:"m4",btn:"ต่อไป",
+text:"เนขอโทษที่ไปกดดัน ไปจู่จี้เคิซหลายเรื่อง ขอโทษที่เผลอใช้อารมณ์ และขอโทษที่พูดขัดความรู้สึกตอนเคิซกำลังเล่น\n\nที่เนบ่นตอนเคิซปิดไมค์มาคุยแป๊บเดียวแล้วไป ไม่ได้เกิดจากเนโกรธ แต่เพราะเนรู้สึกว่าเรามีเวลาให้กันน้อยไป บางวันเราแทบไม่ได้ทำอะไรด้วยกันเลย แต่วิธีที่เนแสดงออกมันผิด และทำให้เคิซเหนื่อย\n\nเนรู้ตัวหมดแล้วครับ ตอนนี้ถ้ามีโอกาส เนยอมที่จะไม่มีอะไรแบบนั้นแล้ว ขอบคุณที่ผ่านมาที่เคิซพยายามมาตลอดนะครับ ถึงก่อนหน้านี้เนจะไม่ค่อยรู้อะไร"},
+
+m4:{tag:"ข้อความที่ 4 / 5",title:"",next:"m5",btn:"ต่อไป",
+text:"หลังวันที่เกิดเรื่อง 3-4 วัน เนทำอะไรไม่ถูกเลย ไม่อยากทำอะไรสักอย่าง และตอนนี้ก็ยังรู้สึกแบบนั้นอยู่\n\nเนไม่รู้ว่าที่เคิซบอกว่า “อยากอยู่คนเดียว” หมายถึงต้องการเวลาสักพัก หรือหมายถึงเรื่องของเรามันจบแล้ว เนเลยมีแต่คำถามว่าสรุปมันจบหรือยัง แล้วก็ได้แต่รอ โดยไม่รู้ว่าจะได้คำตอบตอนไหน ถ้าไปหาเคิซ เคิซจะหงุดหงิดไหม ถ้ารอต่อไปจะได้คำตอบรึเปล่า\n\nสิ่งที่ลำบากที่สุดไม่ใช่การรอ ถ้ารอแล้วทุกอย่างดีขึ้น นานแค่ไหนเนก็พร้อม แต่เนไม่รู้ว่าการรอของเนจะพาเรากลับมาได้ไหม หรือรอไปมันก็ออกมาเหมือนเดิม\n\nเนเลยตั้งตารอเคิซทุกวัน ตั้งแต่ตื่นจนหลับ แทบไม่ได้ทำอะไรเลย พับจอทุกครั้งที่ได้ยินเสียงดิสคอร์ด พอลงนอนก็เปิดหน้าดิสคอร์ดค้างไว้ หวังว่าจะมีข้อความตอบกลับมา"},
+
+m5:{tag:"ข้อความที่ 5 / 5",title:"มีอะไรจะบอกอีกนิดหน่อย",next:"q1",btn:"มีคำถามอะไรอีกนิดหน่อย ตอบให้หน่อยนะ",
+text:"วันนั้นเนรู้สึกว่า ถ้าเคิซอยากคุยหรือยังรู้สึกอะไรอยู่ ก็ไม่น่าปล่อยให้รอขนาดนี้ ถึงจะมีความหวังลึก ๆ เนก็ไม่อยากโกหกตัวเอง เลยโยนทุกอย่างทิ้งเพื่อจะได้อยู่กับตัวเอง แต่พอเคิซตอบกลับมา เนก็มีหวังอีกครั้ง และกลับไปรู้สึกว่าต้องรอเหมือนเดิม\n\nหลังเรื่องนั้นเนได้ยินเรื่องแปลก ๆ จากคนรอบตัวว่าเคิซมีคนอื่นอยู่แล้ว แต่เนเลือกที่จะไม่เชื่อ เหมือนวันแรกที่เนตัดสินใจคุยกับเคิซ เชื่อทุกอย่างที่เคิซพูด ไม่สนเพื่อนอีกหลายคนที่พูดเหมือนกัน และตอนนี้เนก็ไม่เสียดายที่ตัดสินใจแบบนั้น เพราะเนรู้สึกคุ้มค่ามาก\n\nเสียดายแค่ว่าทำไมเนรักษาเคิซไว้ไม่ได้ เคิซอาจไม่ใช่คนที่ดีที่สุดที่เนเคยเจอ แต่ไม่รู้ทำไมเนถึงรักเคิซมากที่สุด ทั้งที่ไม่เคยเห็นหน้าชัด ๆ ไม่เคยเจอตัวจริง และเสียดายที่ความรู้สึกของเรามาจบลงง่าย ๆ เพราะคำพูดที่ไม่ได้คิดของเนแค่ไม่กี่ประโยค\n\nพอเราไม่ได้คุยกัน เนก็รู้แล้วว่าตัวเองพลาดตรงไหน ถึงมันจะยาก เนก็พร้อมที่จะปรับ พร้อมที่จะเข้าใจเคิซทุกอย่างครับ"},
+
+/* ---------- ส่วนที่ 2: คำถาม 5 ข้อ + หน้าคำตอบ ---------- */
+q1:{tag:"คำถามที่ 1 / 5",title:"ตลอดเวลาที่คุยกันมา เคิซมีความสุขบ้างรึเปล่า",
+note:"ไม่รู้ว่าเคิซจะมาตอบคำถามพวกนี้ไหม แต่ถ้ามาตอบได้ บอกความรู้สึกจริง ๆ มาได้เลยครับ",
+opts:[["ใช่","r1a"],["ไม่","r1b"]]},
+r1a:{tag:"คำตอบ",title:"ดีใจที่ได้ยินแบบนั้นครับ",next:"q2",btn:"ข้อต่อไป",text:""},
+r1b:{tag:"คำตอบ",title:"ไม่เป็นไรครับ",next:"q2",btn:"ข้อต่อไป",text:""},
+
+q2:{tag:"คำถามที่ 2 / 5",title:"ทุก ๆ อย่างที่เนทำ พอจะมีสักครั้งไหมที่เคิซรู้สึกว่าเนเป็นแฟนที่ดี",
+opts:[["ก็เคย","r2a"],["ไม่นะ","r2b"]]},
+r2a:{tag:"คำตอบ",title:"😁😁",next:"q3",btn:"ข้อต่อไป",text:""},
+r2b:{tag:"คำตอบ",title:"🫡🫡🫡",next:"q3",btn:"ข้อต่อไป",text:""},
+
+q3:{tag:"คำถามที่ 3 / 5",title:"ความรู้สึกของเคิซมันหายไปตอนไหน",
+opts:[["ตั้งแต่แรก","r3a"],["ค่อย ๆ ลดลงจากสิ่งที่เนทำ","r3b"],["ตอนที่เกิดเรื่องวันนั้น","r3c"]]},
+r3a:{tag:"คำตอบ",title:"ช็อคนิดหน่อยครับ",next:"q4",btn:"ข้อต่อไป",text:"แต่ดีใจที่เคิซพูดความจริง"},
+r3b:{tag:"คำตอบ",title:"โอเคครับ",next:"q4",btn:"ข้อต่อไป",text:"เนเข้าใจเรื่องนี้"},
+r3c:{tag:"คำตอบ",title:"ขอโทษอีกรอบครับ",next:"q4",btn:"ข้อต่อไป",text:""},
+
+q4:{tag:"คำถามที่ 4 / 5",title:"มีอะไรอยากจะบอกไหม",note:"พิมพ์ตอบได้เลย หรือเว้นว่างไว้ก็ได้ครับ",input:true,next:"q5",btn:"ข้อสุดท้าย"},
+
+q5:{tag:"คำถามที่ 5 / 5",title:"ถ้าเนขอให้เคิซกลับมา แล้วเนจะเป็นคนปรับทุกอย่าง เนยอมทุกอย่าง เคิซพอจะกลับมาได้ไหม",
+opts:[["เคิซตัดสินใจมาดีแล้ว","r5a"],["เคิซขอคิดก่อน","r5b"],["น่าจะได้แค่เพื่อน แต่ไม่ใช่เร็ว ๆ นี้","r5c"],["เคิซไม่อยากเจอเนอีกแล้ว","r5d"]]},
+r5a:{tag:"คำตอบ",title:"โอเคครับ",next:"end",btn:"ต่อไป",text:""},
+r5b:{tag:"คำตอบ",title:"เนจะรอคำตอบนะครับ",next:"end",btn:"ต่อไป",text:""},
+r5c:{tag:"คำตอบ",title:"อะเช",next:"end",btn:"ต่อไป",text:""},
+r5d:{tag:"คำตอบ",title:"งับ",next:"end",btn:"ต่อไป",text:""},
+
+/* ---------- หน้าปิด ---------- */
+end:{tag:"สุดท้ายนี้",title:"ขอบคุณนะครับ",next:"m1",btn:"กลับไปอ่านใหม่",ghost:true,extra:true,
+text:"ขอบคุณสำหรับช่วงเวลาที่ผ่านมา ทุกบทสนทนา ทุกวันที่ได้คุยกัน มีค่ากับเนมากจริง ๆ\n\nหวังว่าเคิซจะมีความสุขอยู่บ้างระหว่างที่เราคุยกัน และหวังว่าต่อจากนี้เคิซจะเจอแต่เรื่องดี ๆ ครับ\n\nดูแลตัวเองด้วยนะ\n\n— เน"}
+};
+/* ===================== จบส่วนที่แก้ได้ ===================== */
+
+const card=document.getElementById('card');
+const ans={},sid=Math.random().toString(36).slice(2,10);let db=null;
+const stack=[];let cur=null;
+function save(){if(!db)return;try{db.doc('answers/'+sid).set({answers:ans,updated:new Date().toISOString()}).catch(()=>{})}catch(e){}}
+function summary(){return Object.values(ans).map(x=>x.q+'\n→ '+x.a).join('\n\n')}
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e}
+
+/* การเปลี่ยนหน้า: ไปหน้าใหม่จะจำหน้าเดิมไว้ และปุ่มย้อนกลับจะพากลับ */
+function nav(id){if(id==='m1'){stack.length=0}else if(cur&&cur!==id){stack.push(cur)}go(id)}
+function back(){const p=stack.pop();if(p)go(p)}
+
+function playMusic(){const a=document.getElementById('snd');a.volume=+vol.value/100;a.play().then(()=>{playing=true;pp.textContent='⏸'}).catch(()=>{})}
+
+function extra(){
+  const g=el('a','btn main','🌷 มีของเล็ก ๆ ฝากไว้ให้');g.href=GIFT_URL;g.target='_blank';g.rel='noopener';
+  g.style.cssText='display:block;text-align:center;text-decoration:none;padding:13px 16px;margin-top:10px;border-radius:999px;color:#fff;font-weight:500;background:linear-gradient(90deg,#2f80ff,#4fb6ff);box-shadow:0 6px 18px rgba(47,128,255,.4)';
+  card.append(g);
+  const c=el('button','','คัดลอกคำตอบของฉัน');c.onclick=async()=>{try{await navigator.clipboard.writeText(summary());c.textContent='คัดลอกแล้ว'}catch(e){c.textContent='คัดลอกไม่ได้ในเครื่องนี้'}};card.append(c);
+}
+
+function renderEnvelope(s){
+  card.innerHTML='';card.classList.remove('fade');void card.offsetWidth;card.classList.add('fade');
+  card.append(el('div','tag',s.tag));
+  const env=el('div','env');
+  const body=el('div','body');
+  body.append(el('div','cover',s.title),el('div','hint','แตะเพื่อเปิดจดหมาย'));
+  env.append(body,el('div','flap'));
+  env.onclick=()=>{
+    if(env.classList.contains('open'))return;
+    env.classList.add('open');playMusic();
+    setTimeout(()=>{env.style.display='none';showLetter(s)},900);
+  };
+  card.append(env);
+  const yl=el('a','','▶ ฟังเพลงบน YouTube');yl.href='https://www.youtube.com/watch?v='+YT_ID;yl.target='_blank';yl.rel='noopener';yl.style.cssText='display:block;text-align:center;margin-top:12px;color:#2f80ff;font-size:15px;text-decoration:none';card.append(yl);
+}
+
+function showLetter(s){
+  const wrap=el('div');
+  wrap.append(el('h1','',s.letterTitle||''));
+  s.text.split('\n\n').filter(Boolean).forEach((t,i)=>{const p=el('p','rise',t);p.style.animationDelay=(0.3+i*0.6)+'s';wrap.append(p)});
+  const sg=el('div','sign rise',s.from);sg.style.animationDelay=(0.6+s.text.split('\n\n').length*0.6)+'s';wrap.append(sg);
+  const b=el('button','main',s.btn);b.onclick=()=>nav(s.next);
+  b.style.opacity='0';b.style.animation='up .6s ease forwards';b.style.animationDelay=(1+s.text.split('\n\n').length*0.6)+'s';
+  wrap.append(b);
+  card.append(wrap);
+}
+
+function go(id){
+  cur=id;
+  const s=S[id];
+  if(s.envelope){renderEnvelope(s);return}
+  card.innerHTML='';card.classList.remove('fade');void card.offsetWidth;card.classList.add('fade');
+  card.append(el('div','tag',s.tag));if(s.title)card.append(el('h1','',s.title));
+  if(s.note)card.append(el('p','note',s.note));
+  (s.text||'').split('\n\n').filter(Boolean).forEach(t=>card.append(el('p','',t)));
+  if(s.opts){s.opts.forEach(o=>{const b=el('button','',o[0]);b.onclick=()=>{ans[id]={q:s.title,a:o[0]};save();nav(o[1])};card.append(b)})}
+  else if(s.input){const t=document.createElement('textarea');t.rows=4;t.placeholder='พิมพ์ตรงนี้ได้เลยครับ';card.append(t);const b=el('button','main',s.btn);b.onclick=()=>{ans[id]={q:s.title,a:t.value.trim()||'(ไม่ได้พิมพ์)'};save();nav(s.next)};card.append(b)}
+  else{if(s.extra)extra();const b=el('button',s.ghost?'':'main',s.btn);b.onclick=()=>nav(s.next);card.append(b)}
+  if(stack.length){const bk=el('button','back','← ย้อนกลับ');bk.onclick=back;card.append(bk)}
+  window.scrollTo(0,0);
+}
+
+go('m1');
+
+const yt=document.getElementById('yt'),pp=document.getElementById('pp'),vol=document.getElementById('vol');
+yt.referrerPolicy='strict-origin-when-cross-origin';
+yt.src='https://www.youtube.com/embed/'+YT_ID+'?autoplay=1&loop=1&playlist='+YT_ID+'&playsinline=1&rel=0';
+let playing=false;
+function cmd(f,a){try{yt.contentWindow.postMessage(JSON.stringify({event:'command',func:f,args:a||[]}),'*')}catch(e){}}
+pp.onclick=e=>{e.stopPropagation();const a=document.getElementById('snd');if(a.paused){a.play();playing=true;pp.textContent='⏸'}else{a.pause();playing=false;pp.textContent='▶'}};
+vol.oninput=()=>{document.getElementById('snd').volume=+vol.value/100};
+(async()=>{try{if(window.claude)db=await claude.use('db')}catch(e){}})();
+</script>
+</body>
+</html>
